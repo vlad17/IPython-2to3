@@ -23,7 +23,7 @@ def replace_magic_lines(lines):
     for i, line in enumerate(lines):
         if is_magic(line):
             magic_lines.append((i, lines[i]))
-            lines[i] = "\n" if len(line) > 0 and line.strip()[-1] == "\n" else ""
+            lines[i] = "\n"
     return magic_lines
 
 def convert_ipy2to3(json_to_convert):
@@ -44,21 +44,17 @@ def convert_ipy2to3(json_to_convert):
             os.remove(file_name)
             for i, line in magic:
                 cell['input'][i] = line
-    return json_to_convert
 
 def main(argv):
     if len(argv) != 3:
         print("Usage: {} fromfile.ipynb tofile.ipynb".format(argv[0]))
         return 1
-    print("Reading", argv[1], "as json")
-    in_json = None
+    ipy_json = None
     with io.open(argv[1], mode = "r") as istream:
-        in_json = json.load(istream)
-    print("Converting ipython2 json to ipython3 json")
-    out_json = convert_ipy2to3(in_json)
-    print("Writing ipython3 json to file", argv[2])
+        ipy_json = json.load(istream)
+    convert_ipy2to3(ipy_json)
     with io.open(argv[2], mode = "w") as ostream:
-        json.dump(out_json, ostream)
+        json.dump(ipy_json, ostream)
     return 0
 
 if __name__ == "__main__":
