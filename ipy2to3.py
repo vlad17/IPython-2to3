@@ -34,12 +34,11 @@ def convert_ipy2to3(json_to_convert):
             file_name = None
             with tempfile.NamedTemporaryFile(
                     mode = "w", delete = False) as ostream:
-                print(ostream)
-                print(cell['input'])
                 ostream.writelines(cell['input'])
                 file_name = ostream.name
             cmd2to3 = ["2to3", "--nobackups", "--write", file_name]
-            subprocess.check_call(cmd2to3)
+            with io.open(os.devnull, "w") as nulls:
+                subprocess.check_call(cmd2to3, stdout = nulls, stderr = nulls)
             with io.open(file_name, mode = "r") as istream:
                 cell['input'] = istream.readlines()
             os.remove(file_name)
@@ -48,7 +47,6 @@ def convert_ipy2to3(json_to_convert):
     return json_to_convert
 
 def main(argv):
-    print("running main with argv:", argv)
     if len(argv) != 3:
         print("Usage: {} fromfile.ipynb tofile.ipynb".format(argv[0]))
         return 1
@@ -57,7 +55,6 @@ def main(argv):
     with io.open(argv[1], mode = "r") as istream:
         in_json = json.load(istream)
     print("Converting ipython2 json to ipython3 json")
-    print(in_json)
     out_json = convert_ipy2to3(in_json)
     print("Writing ipython3 json to file", argv[2])
     with io.open(argv[2], mode = "w") as ostream:
