@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 # Converts an IPython notebook written in python2 to python3.
-# TODO: add flags capabilities from 2to3
-# TODO: check if magic interferes with python ever
 
 import io
 import json
