@@ -90,7 +90,7 @@ def main(argv):
     error=convert_ipy2to3(ipy_json)
     if error is not "":
         print(error)
-        return 0
+        return 1
 
     with io.open(argv[2], mode="w") as ostream:
         json.dump(ipy_json, ostream)
