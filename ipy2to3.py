@@ -12,13 +12,11 @@ def convert_ipy2to3(json_to_convert):
     if 'worksheets' in json_to_convert:
         for worksheet in json_to_convert['worksheets']:
             convert_a_worksheet_ipy2to3(worksheet, "new")
+        return ""
     elif 'cells' in json_to_convert:
         convert_a_worksheet_ipy2to3(json_to_convert, "old")
-    else:
-        import sys
-        print("cells or worksheets not found in the json of ".format(sys.argv[1]))
-        sys.exit(1)
-
+        return ""
+    return "no cells or worksheets found in the json of the file"
 
 def is_python_code_cell(cell):
     return cell['cell_type'] == "code" and cell['language'] == "python"
@@ -40,7 +38,8 @@ def convert_a_worksheet_ipy2to3(worksheet, version):
 
 def is_magic(line):
     line = line.strip()
-    if len(line) == 0: return False
+    if len(line) == 0:
+        return False
     return line[0] in ['%', '!', '?'] or line[-1] == '?'
 
 
@@ -87,7 +86,12 @@ def main(argv):
     ipy_json = None
     with io.open(argv[1], mode="r") as istream:
         ipy_json = json.load(istream)
-    convert_ipy2to3(ipy_json)
+
+    error=convert_ipy2to3(ipy_json)
+    if error is not "":
+        print(error)
+        return 0
+
     with io.open(argv[2], mode="w") as ostream:
         json.dump(ipy_json, ostream)
     return 0
@@ -95,5 +99,4 @@ def main(argv):
 
 if __name__ == "__main__":
     import sys
-
     sys.exit(main(sys.argv))
