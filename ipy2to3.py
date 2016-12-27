@@ -54,8 +54,7 @@ def replace_magic_lines(lines):
     return magic_lines
 
 
-def convert_a_cell_ipy2to3(cell,version):
-
+def convert_a_cell_ipy2to3(cell, version):
     magic = replace_magic_lines(cell['source' if version is "old" else 'input'])
 
     file_name = None
@@ -73,7 +72,7 @@ def convert_a_cell_ipy2to3(cell,version):
 
     # read converted file back to cell
     with io.open(file_name, mode="r") as istream:
-            cell['source' if version is "old" else 'input'] = istream.readlines()
+        cell['source' if version is "old" else 'input'] = istream.readlines()
 
     # remove the file
     os.remove(file_name)
