@@ -9,28 +9,28 @@ import tempfile
 
 
 def convert_ipy2to3(json_to_convert):
-    if 'worksheets' in json_to_convert:
+    if 'worksheets' in json_to_convert:  # json notebook format v3
         for worksheet in json_to_convert['worksheets']:
-            convert_a_worksheet_ipy2to3(worksheet, "new")
+            convert_a_worksheet_ipy2to3(worksheet, "v3")
         return ""
     elif 'cells' in json_to_convert:
-        convert_a_worksheet_ipy2to3(json_to_convert, "old")
+        convert_a_worksheet_ipy2to3(json_to_convert, "v4")
         return ""
     return "no cells or worksheets found in the json of the file"
 
-def is_python_code_cell(cell):
+def is_python_code_cell_v3(cell):
     return cell['cell_type'] == "code" and cell['language'] == "python"
 
 
-def is_python_code_cell_old(cell):
+def is_python_code_cell_v4(cell):
     return cell['cell_type'] == "code"  # and cell['language'] == "python"
 
 
 def convert_a_worksheet_ipy2to3(worksheet, version):
-    if version is "old":
-        code_cells = filter(is_python_code_cell_old, worksheet['cells'])
+    if version is "v4":
+        code_cells = filter(is_python_code_cell_v4, worksheet['cells'])
     else:
-        code_cells = filter(is_python_code_cell, worksheet['cells'])
+        code_cells = filter(is_python_code_cell_v3, worksheet['cells'])
 
     for cell in code_cells:
         convert_a_cell_ipy2to3(cell, version)
@@ -54,13 +54,13 @@ def replace_magic_lines(lines):
 
 
 def convert_a_cell_ipy2to3(cell, version):
-    magic = replace_magic_lines(cell['source' if version is "old" else 'input'])
+    magic = replace_magic_lines(cell['source' if version is "v4" else 'input'])
 
     file_name = None
 
     # save cell to file, and have the filename:
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as ostream:
-        ostream.writelines(cell['source' if version is "old" else 'input'])
+        ostream.writelines(cell['source' if version is "v4" else 'input'])
         file_name = ostream.name
 
     # convert python2 to python3 by executing 2to3:
@@ -71,12 +71,12 @@ def convert_a_cell_ipy2to3(cell, version):
 
     # read converted file back to cell
     with io.open(file_name, mode="r") as istream:
-        cell['source' if version is "old" else 'input'] = istream.readlines()
+        cell['source' if version is "v4" else 'input'] = istream.readlines()
 
     # remove the file
     os.remove(file_name)
     for i, line in magic:
-        cell['source' if version is "old" else 'input'][i] = line
+        cell['source' if version is "v4" else 'input'][i] = line
 
 
 def main(argv):
