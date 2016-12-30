@@ -14,6 +14,10 @@ Converts all code sections by invoking 2to3. Handles any IPython magic statement
 
 `ipy2to3 fromfile.ipynb tofile.ipynb` converts ipython2 file `fromfile.ipynb` to an ipython3 file `tofile.ipynb`.
 
+### Testing
+
+Thanks to user shimondoodkin for adding unit tests! To invoke call `python testing/test.py` from the directory root.
+
 ### Future Work
 
 Make a lint checker for style of notebooks as well (How would this report location of the problem? Maybe it could automatically fix the problems and re-save the notebook?).

@@ -1,10 +1,13 @@
 import io
 import unittest
 from unittest import mock
+import sys
 
+sys.path.append('.')
 import ipy2to3
 import test_stubs
 
+executable = '../ipy2to3.py'
 
 class UnitTestIpy2to3(unittest.TestCase):
     @mock.patch.object(ipy2to3, 'convert_a_worksheet_ipy2to3')
@@ -63,7 +66,7 @@ class UnitTestIpy2to3(unittest.TestCase):
 
         with mock.patch('io.open', open_):
             with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-                status = ipy2to3.main(["ipy2to3.py", "test-format-v3.ipynb", "test-format-v3-result.ipynb"])
+                status = ipy2to3.main([executable, "testing/test-format-v3.ipynb", "testing/test-format-v3-result.ipynb"])
                 out = str(mock_stdout.getvalue()).replace('\r', '')
 
         self.assertEqual(status, 0)
@@ -76,7 +79,7 @@ class UnitTestIpy2to3(unittest.TestCase):
         open_ = mock.mock_open(read_data=test_stubs.str_notebook_v3)
         with mock.patch('io.open', open_):
             with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-                status = ipy2to3.main(["ipy2to3.py", "test-format-v3.ipynb", "test-format-v3-result.ipynb"])
+                status = ipy2to3.main([executable, "testing/test-format-v3.ipynb", "testing/test-format-v3-result.ipynb"])
                 out = str(mock_stdout.getvalue()).replace('\r', '')
 
         self.assertEqual(status, 0)
@@ -89,7 +92,7 @@ class UnitTestIpy2to3(unittest.TestCase):
         open_ = mock.mock_open(read_data=test_stubs.str_notebook_v3)
         with mock.patch('io.open', open_):
             with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-                status = ipy2to3.main(["ipy2to3.py", "test-format-v3.ipynb", "test-format-v3-result.ipynb"])
+                status = ipy2to3.main([executable, "testing/test-format-v3.ipynb", "testing/test-format-v3-result.ipynb"])
                 out = str(mock_stdout.getvalue()).replace('\r', '')
 
         self.assertEqual(status, 1)
@@ -100,35 +103,35 @@ class UnitTestIpy2to3(unittest.TestCase):
     def test_usage(self):
         # no arguments
         with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-            status = ipy2to3.main(["ipy2to3.py"])
+            status = ipy2to3.main([executable])
             out = str(mock_stdout.getvalue()).replace('\r', '')
         self.assertEqual(status, 1)
         self.assertTrue('Usage' in out)
 
         # one argument
         with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-            status = ipy2to3.main(["ipy2to3.py"])
+            status = ipy2to3.main([executable])
             out = str(mock_stdout.getvalue()).replace('\r', '')
         self.assertEqual(status, 1)
         self.assertTrue('Usage' in out)
 
     def test_format_err(self):
         with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-            status = ipy2to3.main(["ipy2to3.py", "test-format-err.ipynb", "test-format-err-result.ipynb"])
+            status = ipy2to3.main([executable, "testing/test-format-err.ipynb", "testing/test-format-err-result.ipynb"])
             out = str(mock_stdout.getvalue()).replace('\r', '')
         self.assertEqual(status, 1)
         self.assertTrue('error' in out)
 
     def test_format_v3(self):
         with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-            status = ipy2to3.main(["ipy2to3.py", "test-format-v3.ipynb", "test-format-v3-result.ipynb"])
+            status = ipy2to3.main([executable, "testing/test-format-v3.ipynb", "testing/test-format-v3-result.ipynb"])
             out = str(mock_stdout.getvalue()).replace('\r', '')
         self.assertEqual(status, 0)
         self.assertEqual(out, 'error converting cell, cell left unconverted: \nrun github_datapull.py;\n')
 
     def test_format_v4(self):
         with unittest.mock.patch('sys.stdout', new=io.StringIO()) as mock_stdout:
-            status = ipy2to3.main(["ipy2to3.py", "test-format-v4.ipynb", "test-format-v4-result.ipynb"])
+            status = ipy2to3.main([executable, "testing/test-format-v4.ipynb", "testing/test-format-v4-result.ipynb"])
             out = str(mock_stdout.getvalue()).replace('\r', '')
         self.assertEqual(status, 0)
         self.assertEqual(out, '')
