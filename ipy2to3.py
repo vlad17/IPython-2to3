@@ -33,7 +33,7 @@ def is_python_code_cell_v3(cell):
 
 
 def is_python_code_cell_v4(cell):
-    return cell['cell_type'] == "code"  # and cell['language'] == "python"
+    return cell['cell_type'] == "code"
 
 
 def convert_a_worksheet_ipy2to3(worksheet, version):
@@ -90,7 +90,7 @@ def convert_a_cell_ipy2to3(cell, version):
         with io.open(file_name, mode="r") as istream:
             cell['source' if version is "v4" else 'input'] = istream.readlines()
 
-        # remove the file
+        # remove the temporary file
         os.remove(file_name)
         for i, line in magic:
             cell['source' if version is "v4" else 'input'][i] = line
@@ -104,6 +104,10 @@ def main(argv):
     if len(argv) != 3:
         print("Usage: {} fromfile.ipynb tofile.ipynb".format(argv[0]))
         return 1
+
+    # maybe to use nbformat to read and write the file like:
+    #  nb = nbformat.read('path/to/notebook.ipynb', as_version=4)
+
     ipy_json = None
     with io.open(argv[1], mode="r") as istream:
         ipy_json = json.load(istream)
@@ -115,7 +119,7 @@ def main(argv):
         if error.startswith("notebook-format-error"):
             return 1
 
-    # took the folowing from saving a notebook with python3:
+    # took the following from saving a notebook with python3 (see file dummy-v4-py3.ipynb) :
 
     version3example = """
 {
